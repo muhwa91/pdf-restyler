@@ -1,0 +1,33 @@
+# 자동 기록 로그 (질문·세션 기록은 커밋하지 않음 — 폴더 구조만 유지)
+logs/*.jsonl
+logs/sessions/
+logs/sessions.log
+
+# 의존성 (스택별)
+/vendor/
+/node_modules/
+/.venv/
+__pycache__/
+*.py[cod]
+
+# 환경설정·비밀값 (절대 커밋 금지)
+.env
+.env.*
+!.env.example
+
+# 빌드 산출물
+/public/build/
+/public/hot
+/public/storage
+/dist/
+/build/
+*.egg-info/
+*.spec
+# 배포 패키지(대용량 — git 추적 제외, 필요 시 빌드/압축으로 재생성)
+/docs/*.zip
+
+# OS·에디터
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

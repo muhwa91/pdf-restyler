@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>진행 상황 — pdf_restyler (H SECURITY 명함 생성기)</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+      max-width: 960px; margin: 0 auto; padding: 32px 20px;
+      line-height: 1.6; color: #1f2328; background: #fff;
+    }
+    h1 { margin: 0 0 4px; font-size: 1.7rem; }
+    .sub { color: #656d76; margin: 0 0 20px; font-size: 0.9rem; }
+    /* 직원별 탭 (담당 기준 필터) */
+    .tabs {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin: 0 0 22px; padding: 0;
+    }
+    .tab {
+      font-size: 0.82rem; font-family: inherit;
+      padding: 5px 13px; border: 1px solid #d0d7de; border-radius: 999px;
+      background: #f6f8fa; color: #1f2328; cursor: pointer; line-height: 1.4;
+    }
+    .tab:hover { background: #eaeef2; }
+    .tab.active { background: #1f2328; color: #fff; border-color: #1f2328; }
+    .tab .count { opacity: 0.55; margin-left: 5px; font-size: 0.75rem; }
+    .entry {
+      border: 1px solid #d0d7de; border-radius: 10px;
+      padding: 16px 20px; margin: 0 0 16px; background: #f6f8fa;
+    }
+    .entry.hidden { display: none; }
+    .entry h2 { margin: 0 0 6px; font-size: 1.1rem; }
+    .meta { font-size: 0.8rem; color: #656d76; margin: 0 0 12px; }
+    .badge {
+      display: inline-block; font-size: 0.72rem; font-weight: 600;
+      padding: 2px 9px; border-radius: 999px; vertical-align: middle;
+    }
+    .ok   { background: #1a7f37; color: #fff; }   /* 완료 */
+    .wip  { background: #9a6700; color: #fff; }   /* 진행중 */
+    .fail { background: #cf222e; color: #fff; }   /* 실패/막힘 */
+    /* 요청 → 처리 (비개발자도 알기 쉽게) */
+    .req, .done {
+      margin: 6px 0 0; padding: 9px 13px; background: #fff;
+      border-radius: 7px; font-size: 0.95rem;
+    }
+    .req  { border-left: 3px solid #6e7781; }
+    .done { border-left: 3px solid #1a7f37; }
+    .req .label  { font-weight: 700; color: #6e7781; }
+    .done .label { font-weight: 700; color: #1a7f37; }
+    .empty-note { display: none; color: #656d76; font-size: 0.9rem; text-align: center; padding: 24px; }
+    footer { margin-top: 32px; font-size: 0.8rem; color: #8b949e; text-align: center; }
+  </style>
+</head>
+<body>
+  <h1>📋 진행 상황 — <em>pdf_restyler</em> (H SECURITY 명함 생성기)</h1>
+  <p class="sub">개발자·비개발자 모두가 보는 진행 기록입니다. 각 항목은 <b>요청 → 처리</b>로 쉽게 정리되며, 위쪽이 최신입니다. 위 탭으로 <b>직원별 작업 내역</b>만 골라 볼 수 있습니다.</p>
+
+  <!--
+    직원별 탭: 클릭하면 그 직원이 담당한 항목만 보입니다. 옆 숫자는 항목 개수(자동 계산).
+    탭의 data-filter 값과 각 .entry 의 data-agent 값이 일치하면 노출됩니다.
+    표준 담당 키: main(메인) / tech-lead / backend / frontend / ui-ux / debug / qa / review / security
+  -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-filter="all">전체</button>
+    <button class="tab" data-filter="main">메인</button>
+    <button class="tab" data-filter="tech-lead">tech-lead</button>
+    <button class="tab" data-filter="backend">backend</button>
+    <button class="tab" data-filter="frontend">frontend</button>
+    <button class="tab" data-filter="ui-ux">ui-ux</button>
+    <button class="tab" data-filter="debug">debug</button>
+    <button class="tab" data-filter="qa">qa</button>
+    <button class="tab" data-filter="review">review</button>
+    <button class="tab" data-filter="security">security</button>
+  </nav>
+
+  <!--
+    새 항목은 이 주석 바로 아래에 추가합니다 (최신이 맨 위). 형식:
+    <div class="entry" data-agent="backend">          (담당 키 — 교차작업이면 공백으로 여러 개: data-agent="backend frontend")
+      <h2>한 줄 제목 <span class="badge ok">완료</span></h2>   (badge: ok 완료 / wip 진행중 / fail 막힘)
+      <p class="meta">YYYY-MM-DD · 담당: (메인/직원명)</p>
+      <p class="req"><span class="label">📌 요청</span> — 사용자가 원한 것을 쉬운 말로 1~2줄</p>
+      <p class="done"><span class="label">✅ 처리</span> — 무엇을 했고 결과가 어떤지 쉬운 말로 1~2줄 (개발 용어 최소화)</p>
+    </div>
+  -->
+  <div id="entries">
+  <!-- ENTRIES:START -->
+
+  <div class="entry" data-agent="main">
+    <h2>H SECURITY 명함 생성 프로그램 완성 <span class="badge ok">완료</span></h2>
+    <p class="meta">2026-06-28 · 담당: 메인</p>
+    <p class="req"><span class="label">📌 요청</span> — 디자인 명함(PDF)의 글자·색을 바꿔 직원 명함을 만들고 싶다. 비개발자 친구도 쓸 수 있게 프로그램으로 만들어줘.</p>
+    <p class="done"><span class="label">✅ 처리</span> — 이름·연락처를 입력하면 명함 PDF가 자동으로 만들어지는 Windows 프로그램을 완성했습니다. 대표(핑크)·직원(검정) 디자인, 입력 즉시 미리보기, 한 번에 PDF 저장. 다크 테마(indigo 포인트)·치이카와 아이콘을 입히고, 더블클릭으로 실행되는 exe·사용설명서·배포용 zip까지 만들었습니다.</p>
+  </div>
+
+  <div class="entry" data-agent="main">
+    <h2>명함 편집 방식 검증 (PoC) <span class="badge ok">완료</span></h2>
+    <p class="meta">2026-06-28 · 담당: 메인</p>
+    <p class="req"><span class="label">📌 요청</span> — 명함 템플릿의 글자(이름·연락처)와 색을 실제로 바꿀 수 있는지 먼저 확인해줘.</p>
+    <p class="done"><span class="label">✅ 처리</span> — 명함 글자가 그림(곡선)으로 박혀 있어 그대로는 못 바꾸지만, 같은 위치·색·폰트(Pretendard)로 다시 그려 교체할 수 있음을 확인했습니다. 개인정보가 PDF에 남지 않도록 실제 삭제(redaction) 방식도 적용했습니다.</p>
+  </div>
+
+  <!-- ENTRIES:END -->
+  </div>
+
+  <p class="empty-note" id="emptyNote">이 직원이 담당한 항목이 아직 없습니다.</p>
+
+  <footer>dev-team template · 진행 기록 (요청 → 처리)</footer>
+
+  <script>
+    (function () {
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('#tabs .tab'));
+      var entries = Array.prototype.slice.call(document.querySelectorAll('#entries .entry'));
+      var emptyNote = document.getElementById('emptyNote');
+
+      function agentsOf(entry) {
+        return (entry.getAttribute('data-agent') || '').trim().split(/\s+/).filter(Boolean);
+      }
+
+      // 탭별 개수 자동 표시
+      tabs.forEach(function (tab) {
+        var f = tab.getAttribute('data-filter');
+        var n = f === 'all'
+          ? entries.length
+          : entries.filter(function (e) { return agentsOf(e).indexOf(f) !== -1; }).length;
+        var c = document.createElement('span');
+        c.className = 'count';
+        c.textContent = n;
+        tab.appendChild(c);
+      });
+
+      function apply(filter) {
+        var shown = 0;
+        entries.forEach(function (e) {
+          var match = filter === 'all' || agentsOf(e).indexOf(filter) !== -1;
+          e.classList.toggle('hidden', !match);
+          if (match) shown++;
+        });
+        emptyNote.style.display = shown === 0 ? 'block' : 'none';
+      }
+
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          tabs.forEach(function (t) { t.classList.remove('active'); });
+          tab.classList.add('active');
+          apply(tab.getAttribute('data-filter'));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

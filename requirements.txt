@@ -1,0 +1,7 @@
+PyMuPDF>=1.24
+PySide6>=6.6
+pyqtdarktheme>=2.1
+
+# 빌드/리소스 도구 (실행에는 불필요)
+Pillow>=10.0      # svg→ico 멀티해상도 변환
+pyinstaller>=6.0  # 단독 실행 exe 빌드
