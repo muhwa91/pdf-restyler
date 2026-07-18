@@ -45,7 +45,7 @@ pyinstaller main.py --onefile --windowed --name "HSecurity_명함생성기" `
   --collect-all qdarktheme
 ```
 
-→ `dist/HSecurity_명함생성기.exe` + `docs/사용설명서.pdf`(비개발자용 매뉴얼)를 zip으로 묶어 전달.
+→ `dist/HSecurity_명함생성기.exe` + `docs/자산/사용설명서.pdf`(비개발자용 매뉴얼)를 zip으로 묶어 전달.
 
 ## 구조
 
@@ -57,7 +57,7 @@ src/
 assets/
   fonts/Pretendard-*.ttf     폰트
   template/명함템플릿.pdf      명함 베이스 (로고·레이아웃만, 개인정보 제거됨)
-docs/
+docs/자산/
   사용설명서.pdf              비개발자용 매뉴얼
   대표_템플릿.pdf / 직원_템플릿.pdf  샘플(더미값)
 ```
