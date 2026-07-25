@@ -1,4 +1,4 @@
-# H SECURITY 명함 생성기 (pdf_restyler)
+# H SECURITY 명함 생성기 (pdf-restyler)
 
 이름·직급·연락처만 입력하면 **H SECURITY 표준 명함 PDF를 자동 생성**하는 Windows 데스크톱 앱.
 
@@ -65,7 +65,7 @@ pyinstaller main.py --onefile --windowed --name "HSecurity_명함생성기" `
 
 ```mermaid
 graph LR
-  user[사용자 입력] --> app[pdf_restyler 앱]
+  user[사용자 입력] --> app[pdf-restyler 앱]
   tpl[[명함템플릿.pdf]] --> app
   font[[Pretendard TTF]] --> app
   app -->|redaction + 재드로잉| out[[YYMMDD_이름.pdf]]
